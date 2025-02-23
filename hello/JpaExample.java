@@ -6,36 +6,60 @@ import javax.persistence.Persistence;
 import javax.persistence.StoredProcedureQuery;
 import org.hibernate.cfg.Configuration;
 import java.lang.*;
-
+import java.util.ArrayList; 
 import java.util.List;
+import com.microsoft.sqlserver.jdbc.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class JpaExample
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws SQLException
     {
         
-        // System.out.println("Creating EntityManagerFactory...");
-        // EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
-        // System.out.println("EntityManagerFactory created!");        
-        
-        
-        
-        
-        //System.out.println("Creating EntityManagerFactory...");
-        //EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
-        //System.out.println("EntityManagerFactory created!");        
-
-        //System.out.println(Thread.currentThread().getContextClassLoader().getResource("META-INF/persistence.xml"));
-
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
         EntityManager em = emf.createEntityManager();
         
 
+        /*
+        emf.createEntityManager();
         em.getTransaction().begin();
-        
-        Course javaCourse = new Course(3,true,"CSJAVA","Java Course");
-        em.persist(javaCourse);
+
+        Course aCourse = new Course(4,true,"JVM101","JVM Basics");
+        em.persist(aCourse);
+
+
         em.getTransaction().commit();
+        em.close();
+        emf.close();
+        */
+        
+        /*
+        List<CourseUDT> courses = new ArrayList<>();
+        courses.add(new CourseUDT(1, null, null));
+
+        StoredProcedureQuery query = em.createStoredProcedureQuery("InputUDT");
+        query.registerStoredProcedureParameter("p1", hello.CourseUDT[].class, javax.persistence.ParameterMode.IN);
+
+        query.setParameter("p1", courses.toArray());
+        */
+
+        String connectionUrl = "jdbc:sqlserver://localhost:1433;databaseName=Univ;encrypt=false;integratedSecurity=true;trustServerCertificate=true;";
+        Connection conn = DriverManager.getConnection(connectionUrl);
+
+        SQLServerDataTable dataTable = new SQLServerDataTable();
+        dataTable.addColumnMetadata("Id", java.sql.Types.INTEGER);
+        dataTable.addColumnMetadata("Code", java.sql.Types.VARCHAR);
+        dataTable.addColumnMetadata("Title", java.sql.Types.VARCHAR);   
+        
+        dataTable.addRow(1, null, null);
+
+        try (SQLServerCallableStatement stmt = (SQLServerCallableStatement) conn.prepareCall("{call InputUDT(?)}")) {
+            stmt.setStructured(1, "dbo.CourseUDTs", dataTable);
+            stmt.execute();
+        }        
     }
 
 }
