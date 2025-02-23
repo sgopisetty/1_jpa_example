@@ -1,0 +1,14 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" version="2.2">
+	<persistence-unit name="my-persistence-unit" transaction-type="RESOURCE_LOCAL">
+		<class>hello.Course</class>
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=Univ;encrypt=false;integratedSecurity=true;trustServerCertificate=true;"/>
+			<!-- <property name="javax.persistence.jdbc.user" value="yourUsername"/> -->
+			<!-- <property name="javax.persistence.jdbc.password" value="yourPassword"/> -->
+			<property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
+			<property name="hibernate.hbm2ddl.auto" value="update"/>
+			<property name="hibernate.show_sql" value="true"/>
+		</properties>
+	</persistence-unit>
+</persistence>
