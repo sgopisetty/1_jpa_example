@@ -9,10 +9,7 @@ import java.lang.*;
 import java.util.ArrayList; 
 import java.util.List;
 import com.microsoft.sqlserver.jdbc.*;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class JpaExample
 {
@@ -57,8 +54,19 @@ public class JpaExample
         dataTable.addRow(1, null, null);
 
         try (SQLServerCallableStatement stmt = (SQLServerCallableStatement) conn.prepareCall("{call InputUDT(?)}")) {
-            stmt.setStructured(1, "dbo.CourseUDTs", dataTable);
-            stmt.execute();
+            stmt.setStructured(1, "dbo.CourseUDT", dataTable);
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next())
+            {
+                int Id = rs.getInt("Id");
+                boolean Active = rs.getBoolean("Active");
+    
+                if(rs.wasNull())
+                    System.out.println("[Active] was null");
+    
+                System.out.printf("%d,%b\n", Id,Active);
+            }            
         }        
     }
 
