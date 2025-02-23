@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.StoredProcedureQuery;
 import org.hibernate.cfg.Configuration;
+import java.lang.*;
 
 import java.util.List;
 
@@ -12,24 +13,29 @@ public class JpaExample
 {
     public static void main(String[] args)
     {
-        System.out.println("Creating EntityManagerFactory...");
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
-        System.out.println("EntityManagerFactory created!");        
+        
+        // System.out.println("Creating EntityManagerFactory...");
+        // EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
+        // System.out.println("EntityManagerFactory created!");        
+        
+        
+        
+        
         //System.out.println("Creating EntityManagerFactory...");
         //EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
         //System.out.println("EntityManagerFactory created!");        
 
         //System.out.println(Thread.currentThread().getContextClassLoader().getResource("META-INF/persistence.xml"));
 
-        //EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
-        //EntityManager em = emf.createEntityManager();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
+        EntityManager em = emf.createEntityManager();
         
 
-        //em.getTransaction().begin();
+        em.getTransaction().begin();
         
-        //Course javaCourse = new Course(1,true,"CSJAVA","Java Course");
-        //em.persist(javaCourse);
-        //em.getTransaction().commit();
+        Course javaCourse = new Course(3,true,"CSJAVA","Java Course");
+        em.persist(javaCourse);
+        em.getTransaction().commit();
     }
 
 }
