@@ -1,21 +1,67 @@
 package hello;
 
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.StoredProcedureQuery;
+import javax.sql.DataSource;
+import javax.naming.NamingException;
 import org.hibernate.cfg.Configuration;
 import java.lang.*;
 import java.util.ArrayList; 
 import java.util.List;
 import com.microsoft.sqlserver.jdbc.*;
 import java.sql.*;
+import org.hibernate.Session;
+import org.hibernate.jdbc.Work;
 
 public class JpaExample
 {
-    public static void main(String[] args) throws SQLException
+    public static void main(String[] args) throws SQLException, NamingException
     {
-        
+        int i = 1; //get connection from Hibernate
+
+        //i = 2; //create connection from jdbc 
+
+        if(i==1){
+            //get connection from Hibernate
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
+            EntityManager em = emf.createEntityManager();
+            Session session = em.unwrap(Session.class);
+            session.doWork(new Work(){
+                public void execute(Connection conn) throws SQLException {
+
+                    SQLServerDataTable dataTable = new SQLServerDataTable();
+                    dataTable.addColumnMetadata("Id", java.sql.Types.INTEGER);
+                    dataTable.addColumnMetadata("Code", java.sql.Types.VARCHAR);
+                    dataTable.addColumnMetadata("Title", java.sql.Types.VARCHAR);   
+                    
+                    dataTable.addRow(1, null, null);
+            
+                    try (SQLServerCallableStatement stmt = (SQLServerCallableStatement) conn.prepareCall("{call InputUDT(?)}")) {
+                        stmt.setStructured(1, "dbo.CourseUDT", dataTable);
+                        ResultSet rs = stmt.executeQuery();
+            
+                        while(rs.next())
+                        {
+                            int Id = rs.getInt("Id");
+                            boolean Active = rs.getBoolean("Active");
+                
+                            if(rs.wasNull())
+                                System.out.println("[Active] was null");
+                
+                            System.out.printf("%d,%b\n", Id,Active);
+                        }            
+                    } 
+
+                }                
+
+            });
+            System.err.println("Exiting from Hibernate/connection");
+            return;
+        }
+
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("my-persistence-unit");
         EntityManager em = emf.createEntityManager();
         
